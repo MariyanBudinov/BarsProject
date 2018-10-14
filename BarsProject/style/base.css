@@ -1,0 +1,11 @@
+body {
+    background-image: url('../assets/images/background_main.gif');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bars-container {
+    /* border: rgb(0, 0, 255) solid 5px; */
+    padding: 0px;
+    margin: 0px;
+}

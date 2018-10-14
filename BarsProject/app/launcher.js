@@ -1,5 +1,5 @@
 'use strict';
 
-const Bars = require('./bars/Bars.js');
+const BarsManager = require('./bars/BarsManager.js');
 
-document.addEventListener('DOMContentLoaded', () => new Bars());
+document.addEventListener('DOMContentLoaded', () => new BarsManager());
