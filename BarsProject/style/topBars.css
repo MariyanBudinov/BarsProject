@@ -12,4 +12,28 @@
 .logo-container>img {
     height: 100%;
     padding-left: 10px;
+    float: left;
+}
+
+.buttons-container {
+    border: red 2px solid;
+    height: 100%;
+    width: 50%;
+    float: right;
+}
+
+.buttons-container>div {
+    border: blue 2px solid;
+    height: 100%;
+    width: 10%;
+    float: right;
+    padding-left: 15px;
+    text-align: center;
+}
+
+.buttons-container>div>i {
+    border: yellow 2px solid;
+    height: 100%;
+    width: 100%;
+    float: right;
 }

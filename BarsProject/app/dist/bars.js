@@ -321,58 +321,60 @@ class BarsManager extends EventEmitter {
         this.topBars = new TopBars('top-bars');
         this.bottomBars = new BottomBars('bottom-bars');
 
-        this.addTopBarsListeners();
+        // this.addTopBarsListeners();
         this.addWindowListeners();
         this.resizeBarsContainer();
     }
 
+    // BARS LISTENERS
     addTopBarsListeners() {
         let duration = 0.2,
             heightChange = 10;
 
-        this.topBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
-            TweenMax.to(this.topBars.container, duration, {
-                height: '+=' + heightChange,
-                ease: Power1.easeOut
-            })
-            TweenMax.to(this.bottomBars.container, duration, {
-                height: '-=' + heightChange,
-                ease: Power1.easeIn
-            })
-        });
-        this.topBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
-            TweenMax.to(this.topBars.container, duration, {
-                height: '-=' + heightChange,
-                ease: Power1.easeIn
-            })
-            TweenMax.to(this.bottomBars.container, duration, {
-                height: '+=' + heightChange,
-                ease: Power1.easeIn
-            })
-        });
+        // this.topBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
+        //     TweenMax.to(this.topBars.container, duration, {
+        //         height: '+=' + heightChange,
+        //         ease: Power1.easeOut
+        //     })
+        //     TweenMax.to(this.bottomBars.container, duration, {
+        //         height: '-=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        // });
+        // this.topBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
+        //     TweenMax.to(this.topBars.container, duration, {
+        //         height: '-=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        //     TweenMax.to(this.bottomBars.container, duration, {
+        //         height: '+=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        // });
 
-        this.bottomBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
-            TweenMax.to(this.bottomBars.container, duration, {
-                height: '+=' + heightChange,
-                ease: Power1.easeIn
-            })
-            TweenMax.to(this.topBars.container, duration, {
-                height: '-=' + heightChange,
-                ease: Power1.easeIn
-            })
-        });
-        this.bottomBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
-            TweenMax.to(this.bottomBars.container, duration, {
-                height: '-=' + heightChange,
-                ease: Power1.easeIn
-            })
-            TweenMax.to(this.topBars.container, duration, {
-                height: '+=' + heightChange,
-                ease: Power1.easeOut
-            })
-        });
+        // this.bottomBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
+        //     TweenMax.to(this.bottomBars.container, duration, {
+        //         height: '+=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        //     TweenMax.to(this.topBars.container, duration, {
+        //         height: '-=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        // });
+        // this.bottomBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
+        //     TweenMax.to(this.bottomBars.container, duration, {
+        //         height: '-=' + heightChange,
+        //         ease: Power1.easeIn
+        //     })
+        //     TweenMax.to(this.topBars.container, duration, {
+        //         height: '+=' + heightChange,
+        //         ease: Power1.easeOut
+        //     })
+        // });
     }
 
+    // WINDOW LISTENERS
     addWindowListeners() {
         window.addEventListener("resize", this.resizeBarsContainer.bind(this));
     }
@@ -387,6 +389,8 @@ class BarsManager extends EventEmitter {
         this.container.style.height = document.documentElement.clientHeight ?
             `${document.documentElement.clientHeight - heightCorrection}px` :
             `${window.innerHeight - heightCorrection}px`;
+
+        this.topBars.resizeButtons();
     }
 }
 
@@ -425,7 +429,8 @@ module.exports = Bars;
 module.exports = {
     bars: {
         BARS_MOUSE_OVER: 'BARS_MOUSE_OVER',
-        BARS_MOUSE_OUT: 'BARS_MOUSE_OUT'
+        BARS_MOUSE_OUT: 'BARS_MOUSE_OUT',
+        TOP_BARS_BUTTON_CLICK: 'TOP_BARS_BUTTON_CLICK'
     }
 };
 },{}],5:[function(require,module,exports){
@@ -433,6 +438,7 @@ module.exports = {
 
 module.exports = {
     mouseEvents: {
+        CLICK: 'click',
         MOUSE_OVER: 'mouseover',
         MOUSE_OUT: 'mouseout'
     }
@@ -460,18 +466,36 @@ module.exports = BottomBars;
 
 const Bars = require('../base/Bars.js');
 const { TweenMax, TweenLite, Bounce, Power1 } = require('gsap');
+const eventsList = require('../config/eventsList.js');
+const customEvents = require('../config/customEvents.js');
+
+const favicons = {
+    volumeUp: `fa-volume-up`,
+    microphone: `fa-microphone`
+};
+const faviconsPressed = {
+    volumeOff: `fa-volume-off`,
+    microphoneSlash: `fa-microphone-slash`
+};
 
 class TopBar extends Bars {
 
     constructor(cssClass) {
         super(cssClass)
 
+        this.buttonsContainer = document.createElement(`div`);
+        this.buttonsContainer.classList.add(`buttons-container`);
+        this.container.appendChild(this.buttonsContainer);
+
+        this.buttons = [];
+
         this.loadLogo();
+        this.loadButtons();
     }
 
     loadLogo() {
         let logoElement = document.createElement(`div`);
-        logoElement.classList.add('logo-container');
+        logoElement.classList.add(`logo-container`);
         logoElement.innerHTML = `<img src="./assets/images/Hangman3Dcolor.png" alt="Hangman">`;
         this.container.appendChild(logoElement);
         setInterval(() => {
@@ -486,10 +510,50 @@ class TopBar extends Bars {
         }, 60000)
     }
 
+    loadButtons() {
+        Object.keys(favicons).forEach(favicon => {
+            let topButton = document.createElement(`div`);
+            let topIcon = document.createElement(`i`);
+
+            topButton.classList.add(`${favicons[favicon]}-button`);
+            topIcon.classList.add(`fa`, favicons[favicon]);
+
+            this.buttons.push(topIcon);
+
+            topButton.appendChild(topIcon);
+            this.buttonsContainer.appendChild(topButton);
+        });
+        this.loadButtonsListeners();
+    }
+
+    loadButtonsListeners() {
+        let faviconsClasses = Object.keys(favicons);
+        let faviconsPressedClasses = Object.keys(faviconsPressed);
+
+        this.buttons.forEach((button, index) => {
+            button.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
+                button.classList.toggle(favicons[faviconsClasses[index]]);
+                button.classList.toggle(faviconsPressed[faviconsPressedClasses[index]]);
+                this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
+                    button: button,
+                    class: button.classList.item(1)
+                });
+                console.log('AAAAAAAAAAA', button.classList.item(1));
+            });
+        });
+    }
+
+    resizeButtons() {
+        this.buttons.forEach(button => {
+            // button.style.fontSize = `${this.buttonsContainer.clientHeight/1.2}px`;
+            button.style.fontSize = `${Math.min(button.parentElement.clientHeight, button.parentElement.clientWidth)}px`;
+        });
+    }
+
 }
 
 module.exports = TopBar;
-},{"../base/Bars.js":3,"gsap":9}],8:[function(require,module,exports){
+},{"../base/Bars.js":3,"../config/customEvents.js":4,"../config/eventsList.js":5,"gsap":9}],8:[function(require,module,exports){
 'use strict';
 
 const BarsManager = require('./bars/BarsManager.js');
