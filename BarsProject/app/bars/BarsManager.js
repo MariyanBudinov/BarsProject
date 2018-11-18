@@ -22,52 +22,7 @@ class BarsManager extends EventEmitter {
     }
 
     // BARS LISTENERS
-    addTopBarsListeners() {
-        let duration = 0.2,
-            heightChange = 10;
-
-        // this.topBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
-        //     TweenMax.to(this.topBars.container, duration, {
-        //         height: '+=' + heightChange,
-        //         ease: Power1.easeOut
-        //     })
-        //     TweenMax.to(this.bottomBars.container, duration, {
-        //         height: '-=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        // });
-        // this.topBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
-        //     TweenMax.to(this.topBars.container, duration, {
-        //         height: '-=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        //     TweenMax.to(this.bottomBars.container, duration, {
-        //         height: '+=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        // });
-
-        // this.bottomBars.on(customEvents.bars.BARS_MOUSE_OVER, () => {
-        //     TweenMax.to(this.bottomBars.container, duration, {
-        //         height: '+=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        //     TweenMax.to(this.topBars.container, duration, {
-        //         height: '-=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        // });
-        // this.bottomBars.on(customEvents.bars.BARS_MOUSE_OUT, () => {
-        //     TweenMax.to(this.bottomBars.container, duration, {
-        //         height: '-=' + heightChange,
-        //         ease: Power1.easeIn
-        //     })
-        //     TweenMax.to(this.topBars.container, duration, {
-        //         height: '+=' + heightChange,
-        //         ease: Power1.easeOut
-        //     })
-        // });
-    }
+    addTopBarsListeners() {}
 
     // WINDOW LISTENERS
     addWindowListeners() {

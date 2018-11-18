@@ -7,11 +7,15 @@ const customEvents = require('../config/customEvents.js');
 
 const favicons = {
     volumeUp: `fa-volume-up`,
-    microphone: `fa-microphone`
+    microphone: `fa-microphone`,
+    home: `fa-home`,
+    bars: `fa-bars`
 };
 const faviconsPressed = {
     volumeOff: `fa-volume-off`,
-    microphoneSlash: `fa-microphone-slash`
+    microphoneSlash: `fa-microphone-slash`,
+    home: `fa-home`,
+    bars: `fa-bars`
 };
 
 class TopBar extends Bars {
@@ -32,8 +36,11 @@ class TopBar extends Bars {
     loadLogo() {
         let logoElement = document.createElement(`div`);
         logoElement.classList.add(`logo-container`);
+        logoElement.setAttribute('title', 'Hangman');
         logoElement.innerHTML = `<img src="./assets/images/Hangman3Dcolor.png" alt="Hangman">`;
+
         this.container.appendChild(logoElement);
+
         setInterval(() => {
             TweenMax.to(logoElement, 1, {
                 scaleX: 1.2,
@@ -50,6 +57,8 @@ class TopBar extends Bars {
         Object.keys(favicons).forEach(favicon => {
             let topButton = document.createElement(`div`);
             let topIcon = document.createElement(`i`);
+
+            topButton.setAttribute('title', favicons[favicon].replace(/fa-/g, ''));
 
             topButton.classList.add(`${favicons[favicon]}-button`);
             topIcon.classList.add(`fa`, favicons[favicon]);
@@ -82,7 +91,8 @@ class TopBar extends Bars {
     resizeButtons() {
         this.buttons.forEach(button => {
             // button.style.fontSize = `${this.buttonsContainer.clientHeight/1.2}px`;
-            button.style.fontSize = `${Math.min(button.parentElement.clientHeight, button.parentElement.clientWidth)}px`;
+            button.style.fontSize = `${(Math.min(button.parentElement.clientHeight, button.parentElement.clientWidth))}px`;
+            button.style.width = `${button.parentElement.clientWidth}px`;
         });
     }
 

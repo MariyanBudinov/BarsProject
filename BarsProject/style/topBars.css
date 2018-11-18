@@ -13,6 +13,7 @@
     height: 100%;
     padding-left: 10px;
     float: left;
+    display: block;
 }
 
 .buttons-container {
@@ -20,19 +21,22 @@
     height: 100%;
     width: 50%;
     float: right;
+    display: block;
 }
 
 .buttons-container>div {
-    border: blue 2px solid;
-    height: 100%;
+    /* border: blue 2px solid; */
+    height: 80%;
     width: 10%;
     float: right;
-    padding-left: 15px;
+    display: block;
+    margin-right: 15px;
     text-align: center;
 }
 
 .buttons-container>div>i {
-    border: yellow 2px solid;
+    /* border: yellow 2px solid; */
+    color: rgba(255, 255, 255, 0.5);
     height: 100%;
     width: 100%;
     float: right;
