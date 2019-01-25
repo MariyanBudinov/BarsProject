@@ -41,6 +41,7 @@ class BarsManager extends EventEmitter {
             `${window.innerHeight - heightCorrection}px`;
 
         this.topBars.resizeButtons();
+        this.bottomBars.resizeButtons();
     }
 }
 

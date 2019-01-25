@@ -5,23 +5,19 @@ const { TweenMax, TweenLite, Bounce, Power1 } = require('gsap');
 const eventsList = require('../config/eventsList.js');
 const customEvents = require('../config/customEvents.js');
 
-const favicons = {
-    volumeUp: `fa-volume-up`,
-    microphone: `fa-microphone`,
-    home: `fa-home`,
-    bars: `fa-bars`
+const buttonTypes = {
+    home: `button-home`,
+    soundOn: `button-sound-on`
 };
-const faviconsPressed = {
-    volumeOff: `fa-volume-off`,
-    microphoneSlash: `fa-microphone-slash`,
-    home: `fa-home`,
-    bars: `fa-bars`
+const pressedButtonTypes = {
+    home: `button-home`,
+    soundOn: `button-sound-off`
 };
 
 class TopBar extends Bars {
 
     constructor(cssClass) {
-        super(cssClass)
+        super(cssClass);
 
         this.buttonsContainer = document.createElement(`div`);
         this.buttonsContainer.classList.add(`buttons-container`);
@@ -29,15 +25,16 @@ class TopBar extends Bars {
 
         this.buttons = [];
 
-        this.loadLogo();
+        this.logoElement = this.loadLogo();
+
         this.loadButtons();
     }
 
     loadLogo() {
         let logoElement = document.createElement(`div`);
         logoElement.classList.add(`logo-container`);
-        logoElement.setAttribute('title', 'Hangman');
-        logoElement.innerHTML = `<img src="./assets/images/Hangman3Dcolor.png" alt="Hangman">`;
+        logoElement.setAttribute(`title`, 'Hangman');
+        logoElement.innerHTML = `<img src="./assets/images/Hangman3Dcolor.png" class="logo-img" alt="Hangman">`;
 
         this.container.appendChild(logoElement);
 
@@ -50,52 +47,84 @@ class TopBar extends Bars {
                 repeat: 1,
                 yoyo: true
             });
-        }, 60000)
+        }, 60000);
+
+        return this.container.querySelector('.logo-img');
     }
 
     loadButtons() {
-        Object.keys(favicons).forEach(favicon => {
-            let topButton = document.createElement(`div`);
-            let topIcon = document.createElement(`i`);
+        Object.keys(buttonTypes).forEach(type => {
+            let topButton = document.createElement(`div`),
+                image = document.createElement(`img`);
 
-            topButton.setAttribute('title', favicons[favicon].replace(/fa-/g, ''));
+            image.setAttribute(`title`, buttonTypes[type]);
+            image.setAttribute(`class`, buttonTypes[type]);
+            image.setAttribute(`src`, `./assets/images/${buttonTypes[type]}.png`);
 
-            topButton.classList.add(`${favicons[favicon]}-button`);
-            topIcon.classList.add(`fa`, favicons[favicon]);
+            image.classList.add(buttonTypes[type]);
 
-            this.buttons.push(topIcon);
+            this.buttons.push(image);
 
-            topButton.appendChild(topIcon);
+            topButton.appendChild(image);
             this.buttonsContainer.appendChild(topButton);
         });
+
         this.loadButtonsListeners();
     }
 
     loadButtonsListeners() {
-        let faviconsClasses = Object.keys(favicons);
-        let faviconsPressedClasses = Object.keys(faviconsPressed);
+        let buttons = Object.keys(buttonTypes),
+            pressedButtons = Object.keys(pressedButtonTypes);
 
         this.buttons.forEach((button, index) => {
             button.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
-                button.classList.toggle(favicons[faviconsClasses[index]]);
-                button.classList.toggle(faviconsPressed[faviconsPressedClasses[index]]);
+                if (buttonTypes[buttons[index]] !== pressedButtonTypes[pressedButtons[index]]) {
+                    button.classList.toggle(buttonTypes[buttons[index]]);
+                    button.classList.toggle(pressedButtonTypes[pressedButtons[index]]);
+
+                    if (button.src.includes(buttonTypes[buttons[index]])) {
+                        button.src = `./assets/images/${pressedButtonTypes[pressedButtons[index]]}.png`;
+                        button.title = pressedButtonTypes[pressedButtons[index]];
+                    } else {
+                        button.src = `./assets/images/${buttonTypes[buttons[index]]}.png`;
+                        button.title = buttonTypes[buttons[index]];
+                    }
+                }
+
+                TweenMax.to(button, 0.1, {
+                    scaleX: 0.8,
+                    scaleY: 0.8,
+                    yoyo: true,
+                    repeat: 1
+                });
+
                 this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
                     button: button,
-                    class: button.classList.item(1)
+                    class: button.classList.item(0)
                 });
-                console.log('AAAAAAAAAAA', button.classList.item(1));
+                console.warn('PRESSED', button.classList.item(0)); // TODO delete
             });
         });
     }
 
     resizeButtons() {
-        this.buttons.forEach(button => {
-            // button.style.fontSize = `${this.buttonsContainer.clientHeight/1.2}px`;
-            button.style.fontSize = `${(Math.min(button.parentElement.clientHeight, button.parentElement.clientWidth))}px`;
-            button.style.width = `${button.parentElement.clientWidth}px`;
+        let newSize = Math.min(this.buttons[0].parentElement.clientWidth, this.buttons[0].parentElement.clientHeight),
+            logoWidth = 776,
+            logoHeight = 366,
+            logoRatio = logoWidth / logoHeight,
+            newLogoHeight = this.logoElement.parentElement.clientHeight,
+            newLogoWidth = newLogoHeight * logoRatio;
+
+        TweenMax.to(this.buttons, 0.5, {
+            width: newSize,
+            height: newSize,
+        });
+
+        TweenMax.to(this.logoElement, 0.5, {
+            width: newLogoWidth,
+            height: newLogoHeight,
         });
     }
-
 }
 
 module.exports = TopBar;

@@ -4,3 +4,14 @@
     /* background-image: url('../assets/images/barsBackground.jpg');
     background-size: contain; */
 }
+
+.button-play-container {
+    /* border: orange 2px solid; */
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+
+.button-play {
+    /* border: cyan 2px solid; */
+}
