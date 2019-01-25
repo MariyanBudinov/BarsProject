@@ -11,6 +11,7 @@ class BottomBars extends Bars {
         super(cssClass);
 
         this.playButton = this.createPlayButton();
+        this.isPlayButtonPressed = false;
         this.loadEventListeners();
     }
 
@@ -31,18 +32,25 @@ class BottomBars extends Bars {
 
     loadEventListeners() {
         this.playButton.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
-            TweenMax.to(this.playButton, 0.1, {
-                scaleX: 0.8,
-                scaleY: 0.8,
-                yoyo: true,
-                repeat: 1
-            });
+            if (!this.isPlayButtonPressed) {
+                this.isPlayButtonPressed = true;
+
+                TweenMax.to(this.playButton, 0.1, {
+                    scaleX: 0.8,
+                    scaleY: 0.8,
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => {
+                        this.isPlayButtonPressed = false;
+                    },
+                });
+            }
 
             this.emit(customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK, {
                 button: this.playButton,
                 class: this.playButton.classList.item(0)
             });
-            console.log('BBBBBBBBBB', this.playButton.classList.item(0)); // TODO delete
+            console.warn('PRESSED >> ', this.playButton.classList.item(0)); // TODO delete
         });
     }
 

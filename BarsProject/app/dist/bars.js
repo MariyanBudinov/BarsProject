@@ -417,6 +417,7 @@ class BottomBars extends Bars {
         super(cssClass);
 
         this.playButton = this.createPlayButton();
+        this.isPlayButtonPressed = false;
         this.loadEventListeners();
     }
 
@@ -437,18 +438,25 @@ class BottomBars extends Bars {
 
     loadEventListeners() {
         this.playButton.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
-            TweenMax.to(this.playButton, 0.1, {
-                scaleX: 0.8,
-                scaleY: 0.8,
-                yoyo: true,
-                repeat: 1
-            });
+            if (!this.isPlayButtonPressed) {
+                this.isPlayButtonPressed = true;
+
+                TweenMax.to(this.playButton, 0.1, {
+                    scaleX: 0.8,
+                    scaleY: 0.8,
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => {
+                        this.isPlayButtonPressed = false;
+                    },
+                });
+            }
 
             this.emit(customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK, {
                 button: this.playButton,
                 class: this.playButton.classList.item(0)
             });
-            console.log('BBBBBBBBBB', this.playButton.classList.item(0)); // TODO delete
+            console.warn('PRESSED >> ', this.playButton.classList.item(0)); // TODO delete
         });
     }
 
@@ -530,12 +538,14 @@ class TopBar extends Bars {
             image.setAttribute(`src`, `./assets/images/${buttonTypes[type]}.png`);
 
             image.classList.add(buttonTypes[type]);
+            image.isButtonPressed = false;
 
             this.buttons.push(image);
 
             topButton.appendChild(image);
             this.buttonsContainer.appendChild(topButton);
         });
+
         this.loadButtonsListeners();
     }
 
@@ -545,6 +555,13 @@ class TopBar extends Bars {
 
         this.buttons.forEach((button, index) => {
             button.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
+                this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
+                    button: button,
+                    class: button.classList.item(0)
+                });
+
+                console.warn('PRESSED >> ', button.classList.item(0)); // TODO delete
+
                 if (buttonTypes[buttons[index]] !== pressedButtonTypes[pressedButtons[index]]) {
                     button.classList.toggle(buttonTypes[buttons[index]]);
                     button.classList.toggle(pressedButtonTypes[pressedButtons[index]]);
@@ -557,19 +574,20 @@ class TopBar extends Bars {
                         button.title = buttonTypes[buttons[index]];
                     }
                 }
+                if (!button.isButtonPressed) {
+                    button.isButtonPressed = true;
 
-                TweenMax.to(button, 0.1, {
-                    scaleX: 0.8,
-                    scaleY: 0.8,
-                    yoyo: true,
-                    repeat: 1
-                });
+                    TweenMax.to(button, 0.1, {
+                        scaleX: 0.8,
+                        scaleY: 0.8,
+                        yoyo: true,
+                        repeat: 1,
+                        onComplete: () => {
+                            button.isButtonPressed = false;
+                        }
+                    });
+                }
 
-                this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
-                    button: button,
-                    class: button.classList.item(0)
-                });
-                console.log('AAAAAAAAAAA', button.classList.item(0)); // TODO delete
             });
         });
     }

@@ -62,6 +62,7 @@ class TopBar extends Bars {
             image.setAttribute(`src`, `./assets/images/${buttonTypes[type]}.png`);
 
             image.classList.add(buttonTypes[type]);
+            image.isButtonPressed = false;
 
             this.buttons.push(image);
 
@@ -78,6 +79,13 @@ class TopBar extends Bars {
 
         this.buttons.forEach((button, index) => {
             button.addEventListener(eventsList.mouseEvents.CLICK, (e) => {
+                this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
+                    button: button,
+                    class: button.classList.item(0)
+                });
+
+                console.warn('PRESSED >> ', button.classList.item(0)); // TODO delete
+
                 if (buttonTypes[buttons[index]] !== pressedButtonTypes[pressedButtons[index]]) {
                     button.classList.toggle(buttonTypes[buttons[index]]);
                     button.classList.toggle(pressedButtonTypes[pressedButtons[index]]);
@@ -91,18 +99,19 @@ class TopBar extends Bars {
                     }
                 }
 
-                TweenMax.to(button, 0.1, {
-                    scaleX: 0.8,
-                    scaleY: 0.8,
-                    yoyo: true,
-                    repeat: 1
-                });
+                if (!button.isButtonPressed) {
+                    button.isButtonPressed = true;
 
-                this.emit(customEvents.bars.TOP_BARS_BUTTON_CLICK, {
-                    button: button,
-                    class: button.classList.item(0)
-                });
-                console.warn('PRESSED', button.classList.item(0)); // TODO delete
+                    TweenMax.to(button, 0.1, {
+                        scaleX: 0.8,
+                        scaleY: 0.8,
+                        yoyo: true,
+                        repeat: 1,
+                        onComplete: () => {
+                            button.isButtonPressed = false;
+                        }
+                    });
+                }
             });
         });
     }
