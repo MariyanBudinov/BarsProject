@@ -321,17 +321,39 @@ class BarsManager extends EventEmitter {
         this.topBars = new TopBars('top-bars');
         this.bottomBars = new BottomBars('bottom-bars');
 
-        // this.addTopBarsListeners();
+        this.addTopBarsListeners();
+        this.addBottomBarsListeners();
         this.addWindowListeners();
         this.resizeBarsContainer();
     }
 
-    // BARS LISTENERS
-    addTopBarsListeners() {}
+    // TOP BARS LISTENERS
+    addTopBarsListeners() {
+        this.topBars.on(customEvents.bars.TOP_BARS_BUTTON_CLICK, (e) => {
+            console.log('AAAAAAAAAA / ', customEvents.bars.TOP_BARS_BUTTON_CLICK);
+
+            this.emit(customEvents.barsManager.BARS_MANAGER_TOP_BUTTON_CLICK, {
+                button: e.button,
+                class: e.class
+            });
+        });
+    }
+
+    // BOTTOM BARS LISTENERS
+    addBottomBarsListeners() {
+        this.bottomBars.on(customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK, (e) => {
+            console.log('BBBBBBBBBB / ', customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK);
+
+            this.emit(customEvents.barsManager.BARS_MANAGER_PLAY_BUTTON_CLICK, {
+                button: e.button,
+                class: e.class
+            });
+        });
+    }
 
     // WINDOW LISTENERS
     addWindowListeners() {
-        window.addEventListener("resize", this.resizeBarsContainer.bind(this));
+        window.addEventListener(eventsList.windowEvents.RESIZE, this.resizeBarsContainer.bind(this));
     }
 
     resizeBarsContainer() {
@@ -386,13 +408,22 @@ module.exports = {
     bars: {
         BARS_MOUSE_OVER: 'BARS_MOUSE_OVER',
         BARS_MOUSE_OUT: 'BARS_MOUSE_OUT',
-        TOP_BARS_BUTTON_CLICK: 'TOP_BARS_BUTTON_CLICK'
-    }
+        TOP_BARS_BUTTON_CLICK: 'TOP_BARS_BUTTON_CLICK',
+        BOTTOM_BARS_PLAY_BUTTON_CLICK: 'BOTTOM_BARS_PLAY_BUTTON_CLICK',
+    },
+
+    barsManager: {
+        BARS_MANAGER_PLAY_BUTTON_CLICK: 'BARS_MANAGER_PLAY_BUTTON_CLICK',
+        BARS_MANAGER_TOP_BUTTON_CLICK: 'BARS_MANAGER_TOP_BUTTON_CLICK',
+    },
 };
 },{}],5:[function(require,module,exports){
 'use strict';
 
 module.exports = {
+    windowEvents: {
+        RESIZE: 'resize',
+    },
     mouseEvents: {
         CLICK: 'click',
         MOUSE_OVER: 'mouseover',
@@ -574,6 +605,7 @@ class TopBar extends Bars {
                         button.title = buttonTypes[buttons[index]];
                     }
                 }
+
                 if (!button.isButtonPressed) {
                     button.isButtonPressed = true;
 
@@ -587,7 +619,6 @@ class TopBar extends Bars {
                         }
                     });
                 }
-
             });
         });
     }
@@ -617,9 +648,20 @@ module.exports = TopBar;
 'use strict';
 
 const BarsManager = require('./bars/BarsManager.js');
+const customEvents = require('./bars/config/customEvents.js');
 
-document.addEventListener('DOMContentLoaded', () => new BarsManager());
-},{"./bars/BarsManager.js":2}],9:[function(require,module,exports){
+document.addEventListener('DOMContentLoaded', () => {
+    let barsManager = new BarsManager();
+
+    barsManager.on(customEvents.barsManager.BARS_MANAGER_PLAY_BUTTON_CLICK, (e) => {
+        console.log('LAUNCHER PLAY / e', e)
+    });
+
+    barsManager.on(customEvents.barsManager.BARS_MANAGER_TOP_BUTTON_CLICK, (e) => {
+        console.log('LAUNCHER / e', e)
+    });
+});
+},{"./bars/BarsManager.js":2,"./bars/config/customEvents.js":4}],9:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 2.0.2

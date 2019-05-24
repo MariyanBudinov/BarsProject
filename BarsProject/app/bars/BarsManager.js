@@ -16,17 +16,35 @@ class BarsManager extends EventEmitter {
         this.topBars = new TopBars('top-bars');
         this.bottomBars = new BottomBars('bottom-bars');
 
-        // this.addTopBarsListeners();
+        this.addTopBarsListeners();
+        this.addBottomBarsListeners();
         this.addWindowListeners();
         this.resizeBarsContainer();
     }
 
-    // BARS LISTENERS
-    addTopBarsListeners() {}
+    // TOP BARS LISTENERS
+    addTopBarsListeners() {
+        this.topBars.on(customEvents.bars.TOP_BARS_BUTTON_CLICK, (e) => {
+            this.emit(customEvents.barsManager.BARS_MANAGER_TOP_BUTTON_CLICK, {
+                button: e.button,
+                class: e.class
+            });
+        });
+    }
+
+    // BOTTOM BARS LISTENERS
+    addBottomBarsListeners() {
+        this.bottomBars.on(customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK, (e) => {
+            this.emit(customEvents.barsManager.BARS_MANAGER_PLAY_BUTTON_CLICK, {
+                button: e.button,
+                class: e.class
+            });
+        });
+    }
 
     // WINDOW LISTENERS
     addWindowListeners() {
-        window.addEventListener("resize", this.resizeBarsContainer.bind(this));
+        window.addEventListener(eventsList.windowEvents.RESIZE, this.resizeBarsContainer.bind(this));
     }
 
     resizeBarsContainer() {
