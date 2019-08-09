@@ -330,8 +330,6 @@ class BarsManager extends EventEmitter {
     // TOP BARS LISTENERS
     addTopBarsListeners() {
         this.topBars.on(customEvents.bars.TOP_BARS_BUTTON_CLICK, (e) => {
-            console.log('AAAAAAAAAA / ', customEvents.bars.TOP_BARS_BUTTON_CLICK);
-
             this.emit(customEvents.barsManager.BARS_MANAGER_TOP_BUTTON_CLICK, {
                 button: e.button,
                 class: e.class
@@ -342,8 +340,6 @@ class BarsManager extends EventEmitter {
     // BOTTOM BARS LISTENERS
     addBottomBarsListeners() {
         this.bottomBars.on(customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK, (e) => {
-            console.log('BBBBBBBBBB / ', customEvents.bars.BOTTOM_BARS_PLAY_BUTTON_CLICK);
-
             this.emit(customEvents.barsManager.BARS_MANAGER_PLAY_BUTTON_CLICK, {
                 button: e.button,
                 class: e.class
@@ -373,7 +369,7 @@ class BarsManager extends EventEmitter {
 }
 
 module.exports = BarsManager;
-},{"./config/customEvents.js":4,"./config/eventsList.js":5,"./custom/BottomBars.js":6,"./custom/TopBars.js":7,"events":1,"gsap":9}],3:[function(require,module,exports){
+},{"./config/customEvents.js":4,"./config/eventsList.js":5,"./custom/BottomBars.js":6,"./custom/TopBars.js":7,"events":1,"gsap":11}],3:[function(require,module,exports){
 'use strict';
 
 const EventEmitter = require('events');
@@ -504,7 +500,7 @@ class BottomBars extends Bars {
 }
 
 module.exports = BottomBars;
-},{"../base/Bars.js":3,"../config/customEvents.js":4,"../config/eventsList.js":5,"gsap":9}],7:[function(require,module,exports){
+},{"../base/Bars.js":3,"../config/customEvents.js":4,"../config/eventsList.js":5,"gsap":11}],7:[function(require,module,exports){
 'use strict';
 
 const Bars = require('../base/Bars.js');
@@ -644,14 +640,65 @@ class TopBar extends Bars {
 }
 
 module.exports = TopBar;
-},{"../base/Bars.js":3,"../config/customEvents.js":4,"../config/eventsList.js":5,"gsap":9}],8:[function(require,module,exports){
+},{"../base/Bars.js":3,"../config/customEvents.js":4,"../config/eventsList.js":5,"gsap":11}],8:[function(require,module,exports){
 'use strict';
 
+const EventEmitter = require('events');
+const { TweenMax, TweenLite, Bounce, Power1 } = require('gsap');
+
+const GameStage = require('./base/GameStage.js');
+
+class GameManager extends EventEmitter {
+    constructor(PIXI) {
+        super();
+
+        this.gameStage = new GameStage(PIXI, 'game-container');
+    }
+
+}
+
+module.exports = GameManager;
+},{"./base/GameStage.js":9,"events":1,"gsap":11}],9:[function(require,module,exports){
+'use strict';
+
+const EventEmitter = require('events');
+
+class GameStage extends EventEmitter {
+    constructor(PIXI, cssClass) {
+        super();
+
+        this.container = document.querySelector(`.${cssClass}`);
+
+        this.init(PIXI);
+    }
+
+    init(PIXI) {
+        let type = "WebGL";
+
+        if (!PIXI.utils.isWebGLSupported()) {
+            type = "canvas"
+        }
+
+        PIXI.utils.sayHello(type);
+    }
+}
+
+module.exports = GameStage;
+},{"events":1}],10:[function(require,module,exports){
+'use strict';
+
+/**
+ * global:
+ * PIXI 
+ */
+
 const BarsManager = require('./bars/BarsManager.js');
+const GameManager = require('./game/GameManager.js');
 const customEvents = require('./bars/config/customEvents.js');
 
 document.addEventListener('DOMContentLoaded', () => {
     let barsManager = new BarsManager();
+    let gameManager = new GameManager(PIXI);
 
     barsManager.on(customEvents.barsManager.BARS_MANAGER_PLAY_BUTTON_CLICK, (e) => {
         console.log('LAUNCHER PLAY / e', e)
@@ -661,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('LAUNCHER / e', e)
     });
 });
-},{"./bars/BarsManager.js":2,"./bars/config/customEvents.js":4}],9:[function(require,module,exports){
+},{"./bars/BarsManager.js":2,"./bars/config/customEvents.js":4,"./game/GameManager.js":8}],11:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 2.0.2
@@ -8678,4 +8725,4 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[8]);
+},{}]},{},[10]);
